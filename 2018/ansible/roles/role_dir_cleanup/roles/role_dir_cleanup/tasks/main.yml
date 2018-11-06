@@ -1,0 +1,71 @@
+---
+# tasks file for role_dir_cleanup
+- name: check labels for {{ ansible_fqdn }}
+  command: >
+    oc get no {{ ansible_fqdn }} -o go-template='{''{ .metadata.labels }''}'
+  register: labels
+
+- name: remove labels if found
+  command: >
+    oc label no {{ ansible_fqdn }} syslog- logging-infra-fluentd-
+  when: (labels.stdout.find("syslog") != -1) or
+        (labels.stdout.find("fluentd") != -1)
+
+- pause:
+    seconds: 20
+        
+- name: validate labels for {{ ansible_fqdn }}
+  command: >
+    oc get no {{ ansible_fqdn }} -o go-template='{''{ .metadata.labels }''}'
+  register: label
+
+- name: validate running containers on {{ ansible_fqdn }}
+  command: >
+    oc adm manage-node {{ ansible_fqdn }} --list-pods
+  register: pods
+
+- name: rotate logs for {{ ansible_fqdn }}
+  block:
+  - name: validate journald configuration
+    copy:
+      src: journald.conf
+      dest: /etc/systemd/journald.conf
+      backup: yes
+      owner: root
+      group: root
+    notify: restart_journald
+
+  - name: size journal to 1G
+    command: >
+      journalctl --vacuum-size=1G
+
+  - name: Add labels back on {{ ansible_fqdn }}
+    command: >
+      oc label no {{ ansible_fqdn }} logging-infra-fluentd=true syslog=True
+
+  - pause:
+      seconds: 15
+
+  - name: validate labels for {{ ansible_fqdn }}
+    command: >
+      oc get no {{ ansible_fqdn }} -o go-template='{''{ .metadata.labels }''}'
+    register: label_
+  
+  - name: validate running containers on {{ ansible_fqdn }}
+    command: >
+      oc adm manage-node {{ ansible_fqdn }} --list-pods
+    register: pods_
+
+  - name:
+    debug:
+      msg: "rotation completed successfully"
+  when: (label_.stdout.find("syslog") != -1) and
+        (label_.stdout.find("fluentd") != -1) and
+        (pods_.stdout.find("rsyslog") != -1) and
+        (pods_.stdout.find("fluentd") != -1)
+
+  when: (label.stdout.find("syslog") == -1) and
+        (label.stdout.find("fluentd") == -1) and
+        (pods.stdout.find("rsyslog") == -1) and
+        (pods.stdout.find("fluentd") == -1)
+

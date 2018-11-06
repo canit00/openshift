@@ -1,0 +1,5 @@
+---
+# Ansible role to clean up dir space under /var/log & /var/log/journal
+- hosts: all
+  roles:
+    - { role: role_dir_cleanup }

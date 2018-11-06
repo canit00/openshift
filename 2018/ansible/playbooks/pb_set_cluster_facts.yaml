@@ -13,7 +13,7 @@
     app: False
 
   tasks:
-  - name: state if facts.d exists
+  - name: stat if facts.d exists
     stat:
       path: /etc/ansible/facts.d
     register: factsd
