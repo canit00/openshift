@@ -1,0 +1,3 @@
+---
+# vars file for role_cluster_config
+pass: !vault |

@@ -1,0 +1,37 @@
+---
+- set_fact:
+    logging_pub: 'https://kibana.<cluster>.domain.com'
+    master_pub: 'https://<cluster>.domain.com:443'
+    metrics_pub: 'https://hawkular-metrics.<cluster>.domain.com/hawkular/metrics'
+    public_url: 'https://<cluster>.domain.com/console/'
+    env: nonprod
+    key_f: '/etc/origin/master/named_certificates/<cluster>.domain.com.key'
+    cert_f: '/etc/origin/master/named_certificates/<cluster>.domain.com.crt'
+    sub_domain: '<cluster>.domain.com'
+    master_sub_url: 'ocp-master-<cluster>.domain.com'
+    master_url: 'https://ocp-master-<cluster>.domain.com'
+    bind: 'cn=admin,ou=Service,ou=Accounts,dc=domain,dc=com'
+    url: ''
+    cert_auth: 'sha2-ca.crt'
+    image_format: 'registry.domain.com:5000/openshift3/ose-${component}:${version}'
+
+- name: set_etcd0
+  set_fact:
+    etcd_host0: "hostname00001.domain.com"
+    etcd_host1: "hostname00002.domain.com"
+    etcd_host2: "hostname00003.domain.com"
+  when: ansible_fqdn == "hostname00001.domain.com"  
+
+- name: set_etcd1
+  set_fact:
+    etcd_host0: "hostname00002.domain.com"
+    etcd_host1: "hostname00003.domain.com"
+    etcd_host2: "hostname00001.domain.com"
+  when: ansible_fqdn == "hostname00002.domain.com"
+
+- name: set_etcd2
+  set_fact:
+    etcd_host0: "hostname00003.domain.com"
+    etcd_host1: "hostname00002.domain.com"
+    etcd_host2: "hostname00001.domain.com"
+  when: ansible_fqdn == "hostname00003.domain.com"

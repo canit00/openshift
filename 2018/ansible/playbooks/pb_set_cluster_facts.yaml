@@ -1,0 +1,181 @@
+---
+# Ansible playbook sets the following facts.
+# How-to: ansible-playbook -i hosts -l <host(s)|group(s)> -v pb_set_cluster_facts.yaml
+- hosts: all
+  gather_facts: False
+  vars:
+    dr: False
+    prod: False
+    stage: False
+    sbox: False
+    master: False
+    infra: False
+    app: False
+
+  tasks:
+  - name: state if facts.d exists
+    stat:
+      path: /etc/ansible/facts.d
+    register: factsd
+
+  - name: create facts.d if missing
+    file:
+      path: /etc/ansible/facts.d
+      state: directory
+    when: factsd.stat.isdir is undefined
+
+  - name: set fact DR master
+    blockinfile:
+      path: /etc/ansible/facts.d/cluster.fact
+      create: yes
+      owner: root
+      group: root
+      mode: 0600
+      block: |
+        [env]
+        is=dr
+        node=master
+    when: dr and master
+
+  - name: set fact DR infra
+    blockinfile:
+      path: /etc/ansible/facts.d/cluster.fact
+      create: yes
+      owner: root
+      group: root
+      mode: 0600
+      block: |
+        [env]
+        is=dr
+        node=infra
+    when: dr and infra
+
+  - name: set fact DR app
+    blockinfile:
+      path: /etc/ansible/facts.d/cluster.fact
+      create: yes
+      owner: root
+      group: root
+      mode: 0600
+      block: |
+        [env]
+        is=dr
+        node=app
+    when: dr and app
+
+  - name: set fact prod master
+    blockinfile:
+      path: /etc/ansible/facts.d/cluster.fact
+      create: yes
+      owner: root
+      group: root
+      mode: 0600
+      block: |
+        [env]
+        is=prod
+        node=master
+    when: prod and master
+
+  - name: set fact prod infra
+    blockinfile:
+      path: /etc/ansible/facts.d/cluster.fact
+      create: yes
+      owner: root
+      group: root
+      mode: 0600
+      block: |
+        [env]
+        is=prod
+        node=infra
+    when: prod and infra
+
+  - name: set fact prod app
+    blockinfile:
+      path: /etc/ansible/facts.d/cluster.fact
+      create: yes
+      owner: root
+      group: root
+      mode: 0600
+      block: |
+        [env]
+        is=prod
+        node=app
+    when: prod and app
+
+  - name: set fact stage master
+    blockinfile:
+      path: /etc/ansible/facts.d/cluster.fact
+      create: yes
+      owner: root
+      group: root
+      mode: 0600
+      block: |
+        [env]
+        is=stage
+        node=master
+    when: stage and master
+
+  - name: set fact stage infra
+    blockinfile:
+      path: /etc/ansible/facts.d/cluster.fact
+      create: yes
+      owner: root
+      group: root
+      mode: 0600
+      block: |
+        [env]
+        is=stage
+        node=infra
+    when: stage and infra
+
+  - name: set fact stage app
+    blockinfile:
+      path: /etc/ansible/facts.d/cluster.fact
+      create: yes
+      owner: root
+      group: root
+      mode: 0600
+      block: |
+        [env]
+        is=stage
+        node=app
+    when: stage and app
+
+  - name: set fact sandbox app
+    blockinfile:
+      path: /etc/ansible/facts.d/cluster.fact
+      create: yes
+      owner: root
+      group: root
+      mode: 0600
+      block: |
+        [env]
+        is=sandbox
+        node=app
+    when: sbox and app
+
+  - name: set fact sandbox infra
+    blockinfile:
+      path: /etc/ansible/facts.d/cluster.fact
+      create: yes
+      owner: root
+      group: root
+      mode: 0600
+      block: |
+        [env]
+        is=sandbox
+        node=infra
+    when: sbox and infra
+
+  - name: set fact sandbox app
+    blockinfile:
+      path: /etc/ansible/facts.d/cluster.fact
+      create: yes
+      owner: root
+      group: root
+      mode: 0600
+      block: |
+        [env]
+        is=sandbox
+        node=master
+    when: sbox and master
