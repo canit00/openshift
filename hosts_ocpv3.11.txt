@@ -1,0 +1,271 @@
+# This is an example of a bring your own (byo) host inventory
+# Create an OSEv3 group that contains the masters and nodes groups
+[OSEv3:children]
+masters
+etcd
+glusterfs
+nodes
+
+# Set variables common for all OSEv3 hosts
+[OSEv3:vars]
+openshift_disable_swap=true
+openshift_clock_enabled=true
+
+openshift_additional_registry_credentials=[{'host':'registry.connect.redhat.com','user':'<_USERNAME_>','password':'<_PASSWORD_>','test_image':'mongodb/enterprise-operator:0.3.2'}]
+
+# SSH user, this user should allow ssh based auth without requiring a
+# password. If using ssh key based auth, then the key should be managed by an
+# ssh agent.
+ansible_ssh_user=root
+
+# ============================================
+# Registry configuration
+# ============================================
+oreg_auth_user="<_USERNAME_>"
+oreg_auth_password="<_TOKEN_>"
+
+# ============================================
+# Docker configuration
+# ============================================
+openshift_docker_options="--log-driver json-file --log-opt max-size=100M --log-opt max-file=3"
+
+# Gluster Storage variables
+openshift_storage_glusterfs_namespace=gluster-storage
+openshift_storage_glusterfs_name=heketi-gluster-storage
+
+# Debug level for all OpenShift components (Defaults to 2)
+debug_level=2
+
+# Disable the health checks during playbook run
+openshift_disable_check=disk_availability,docker_image_availability,memory_availability
+
+# deployment type valid values are origin, online, atomic-enterprise, and openshift-enterprise
+openshift_deployment_type=openshift-enterprise
+openshift_enable_unsupported_configurations=True
+
+# Hook Definitions
+#openshift_node_upgrade_pre_hook=/usr/share/custom/pre_node.yml
+
+# Nodegroup Definitions 
+openshift_node_groups=[{'name': 'node-config-master', 'labels': ['node-role.kubernetes.io/master=true'], 'edits': [ {'key': 'kubeletArguments.maximum-dead-containers-per-container' , 'value': ['1']}, {'key': 'kubeletArguments.maximum-dead-containers' , 'value': ['20']}, {'key': 'kubeletArguments.image-gc-high-threshold' , 'value': ['80']}, {'key': 'kubeletArguments.image-gc-low-threshold' , 'value': ['60']}, {'key': 'kubeletArguments.kube-reserved' , 'value': ['cpu=500m,memory=512M']}, {'key': 'kubeletArguments.system-reserved' , 'value': ['cpu=500m,memory=512M']}, {'key': 'kubeletArguments.eviction-hard' , 'value': ['memory.available<1Gi']}, {'key': 'kubeletArguments.enable-controller-attach-detach' , 'value': ['true']}, {'key': 'kubeletArguments.max-pods' , 'value': ['80']}, {'key': 'kubeletArguments.serialize-image-pulls' , 'value': ['false']}]}, {'name': 'node-config-infra', 'labels': ['node-role.kubernetes.io/infra=true'], 'edits': [ {'key': 'kubeletArguments.maximum-dead-containers-per-container' , 'value': ['1']}, {'key': 'kubeletArguments.maximum-dead-containers' , 'value': ['20']}, {'key': 'kubeletArguments.image-gc-high-threshold' , 'value': ['80']}, {'key': 'kubeletArguments.image-gc-low-threshold' , 'value': ['60']}, {'key': 'kubeletArguments.kube-reserved' , 'value': ['cpu=500m,memory=512M']}, {'key': 'kubeletArguments.system-reserved' , 'value': ['cpu=500m,memory=512M']}, {'key': 'kubeletArguments.eviction-hard' , 'value': ['memory.available<1Gi']}, {'key': 'kubeletArguments.enable-controller-attach-detach' , 'value': ['true']}, {'key': 'kubeletArguments.max-pods' , 'value': ['80']}, {'key': 'kubeletArguments.serialize-image-pulls' ,'value': ['false']}]}, {'name': 'node-config-infra-logging', 'labels': ['node-role.kubernetes.io/infra-logging=true'], 'edits': [ {'key': 'kubeletArguments.maximum-dead-containers-per-container' , 'value': ['1']}, {'key': 'kubeletArguments.maximum-dead-containers' , 'value': ['20']}, {'key': 'kubeletArguments.image-gc-high-threshold' , 'value': ['80']}, {'key': 'kubeletArguments.image-gc-low-threshold' , 'value': ['60']}, {'key': 'kubeletArguments.kube-reserved' , 'value': ['cpu=500m,memory=512M']}, {'key': 'kubeletArguments.system-reserved' , 'value': ['cpu=500m,memory=512M']}, {'key': 'kubeletArguments.eviction-hard' , 'value': ['memory.available<1Gi']}, {'key': 'kubeletArguments.enable-controller-attach-detach' , 'value': ['true']}, {'key': 'kubeletArguments.max-pods' , 'value': ['80']}, {'key': 'kubeletArguments.serialize-image-pulls' , 'value': ['false']}]}, {'name': 'node-config-infra-gluster' , 'labels': ['node-role.kubernetes.io/infra-gluster=true'], 'edits': [ {'key': 'kubeletArguments.maximum-dead-containers-per-container' , 'value': ['1']}, {'key': 'kubeletArguments.maximum-dead-containers' , 'value': ['20']}, {'key': 'kubeletArguments.image-gc-high-threshold' , 'value': ['80']}, {'key': 'kubeletArguments.image-gc-low-threshold' , 'value': ['60']}, {'key': 'kubeletArguments.kube-reserved' , 'value': ['cpu=500m,memory=512M']}, {'key': 'kubeletArguments.system-reserved' , 'value': ['cpu=500m,memory=512M']}, {'key': 'kubeletArguments.eviction-hard' , 'value': ['memory.available<1Gi']}, {'key': 'kubeletArguments.enable-controller-attach-detach' , 'value': ['true']}, {'key': 'kubeletArguments.max-pods' , 'value': ['80']}, {'key': 'kubeletArguments.serialize-image-pulls' , 'value': ['false']}]}, {'name': 'node-config-compute', 'labels': ['node-role.kubernetes.io/compute=true'], 'edits': [ {'key': 'kubeletArguments.maximum-dead-containers-per-container' , 'value': ['1']}, {'key': 'kubeletArguments.maximum-dead-containers' , 'value': ['20']}, {'key': 'kubeletArguments.image-gc-high-threshold' , 'value': ['80']}, {'key': 'kubeletArguments.image-gc-low-threshold' , 'value': ['60']}, {'key': 'kubeletArguments.kube-reserved' , 'value': ['cpu=500m,memory=512M']}, {'key': 'kubeletArguments.system-reserved' , 'value': ['cpu=500m,memory=512M']}, {'key': 'kubeletArguments.eviction-hard' , 'value': ['memory.available<1Gi']}, {'key': 'kubeletArguments.enable-controller-attach-detach' , 'value': ['true']}, {'key': 'kubeletArguments.max-pods' , 'value': ['80']}, {'key': 'vkubeletArguments.serialize-image-pulls' , 'value': ['false']}]}]
+
+
+# Settings for garbage collection for docker
+#openshift_node_kubelet_args={'maximum-dead-containers-per-container': ['1'],'maximum-dead-containers': ['20'],'image-gc-high-threshold': ['80'],'image-gc-low-threshold': ['60'],'kube-reserved': ["cpu=500m,memory=512M"],'system-reserved': ["cpu=500m,memory=512M"],'eviction-hard': ['memory.available<1Gi'],'enable-controller-attach-detach': ['true'],'max-pods': ['80'],'serialize-image-pulls': ['false']}
+
+# Specify the generic release of OpenShift to install. This is used mainly just during installation, after which we
+# rely on the version running on the first master. Works best for containerized installs where we can usually
+# use this to lookup the latest exact version of the container images, which is the tag actually used to configure
+# the cluster. For RPM installations we just verify the version detected in your configured repos matches this
+# release.
+openshift_release=v3.11
+#openshift_image_tag=v3.11
+#openshift_pkg_version=-3.11.98-1
+
+# This will restart each node as opposed to just restarting the services
+openshift_rolling_restart_mode=services
+
+# Specify variables for the Cert checking playbook
+# ansible-playbook -v -i <inventory_file> /usr/share/ansible/openshift-ansible/playbooks/certificate_expiry/easy-mode.yaml
+openshift_certificate_expiry_config_base=/etc/origin
+openshift_certificate_expiry_warning_days=180
+openshift_certificate_expiry_show_all=no
+openshift_certificate_expiry_generate_html_report=yes
+openshift_certificate_expiry_save_json_results=yes
+
+# Install the openshift examples
+openshift_install_examples=true
+openshift_examples_modify_imagestreams=true
+
+openshift_master_ldap_ca_file=/<_YOURPATH_>/ldapca.pem
+openshift_master_identity_providers=[{'name':'Active_Directory','login':'true','challenge':'true','kind':'LDAPPasswordIdentityProvider','attributes':{'id':['dn'],'email':['mail'],'name':['displayName'],'preferredUsername':['sAMAccountName']},'insecure':'false','bindDN':'CN=<_NAME_>,OU=Service Accounts,OU=Applications,DC=domain,DC=com','bindPassword':'_<BIND_PASSWORD>_','ca':'/etc/pki/tls/certs/ldapca.pem','url':'ldaps://domain.com/DC=domain,DC=com?sAMAccountName?sub?(|(memberOf=CN=_<SOME_GROUP>_,OU=SOMETHING,OU=Groups,DC=domain,DC=com))'}]
+
+# Native high availability cluster method with optional load balancer.
+# If no lb group is defined, the installer assumes that a load balancer has
+# been preconfigured. For installation the value of
+# openshift_master_cluster_hostname must resolve to the load balancer
+# or to one or all of the masters defined in the inventory if no load
+# balancer is present.
+openshift_master_cluster_method=native
+openshift_master_cluster_hostname=ose-_<env>_.domain.com
+openshift_master_cluster_public_hostname=ose-_<env>_.domain.com
+
+openshift_master_overwrite_named_certificates=true
+openshift_master_named_certificates=[{"certfile": "/_<YOURPATH>_/cert.cer", "keyfile": "/_<YOURPATH>_/cert.key", "cafile": "/_<YOURPATH>_/certCA.pem"}]
+
+# default subdomain to use for exposed routes
+openshift_master_default_subdomain=ose-_<env>_.domain.com
+
+# default project node selector
+osm_default_node_selector='node-role.kubernetes.io/compute=true'
+
+# OpenShift Router Options
+#openshift_router_selector='infra=true'
+openshift_router_selector='node-role.kubernetes.io/infra=true'
+openshift_hosted_router_replicas=3
+# Router certificate (optional)
+# Provide local certificate paths which will be configured as the
+# router's default certificate.
+openshift_hosted_router_certificate={"certfile": "/_<YOURPATH>_/cert.cer", "keyfile": "/_<YOURPATH>_/cert.key", "cafile": "/_<YOURPATH>_/certCA.pem"}
+
+# Registry selector (optional)
+# Registry will only be created if nodes matching this label are present.
+# Default value: 'region=infra'
+#openshift_hosted_registry_selector='node-role.kubernetes.io/infra=true'
+openshift_registry_selector='node-role.kubernetes.io/infra=true'
+hosted_registry_insecure=false
+
+# Registry Storage Options
+#
+# External NFS Host
+# NFS volume must already exist with path "nfs_directory/_volume_name" on
+# the storage_host. For example, the remote volume path using these
+# options would be "nfs.example.com:/exports/registry"
+openshift_hosted_registry_storage_kind=nfs
+openshift_hosted_registry_storage_access_modes=['ReadWriteMany']
+openshift_hosted_registry_storage_host=hostname901.domain.com
+openshift_hosted_registry_storage_nfs_directory=/export/osdocker
+openshift_hosted_registry_storage_volume_name=docker-registry
+openshift_hosted_registry_storage_volume_size=50Gi
+
+#openshift_hosted_metrics_public_url=https://hawkular-metrics-openshift-infra.ose-env.domain.com/hawkular/metrics
+#openshift_hosted_metrics_deploy=true
+# Option B - External NFS Host
+# NFS volume must already exist with path "nfs_directory/_volume_name" on
+# the storage_host. For example, the remote volume path using these
+# options would be "nfs.example.com:/exports/metrics"
+openshift_metrics_server_install=true
+openshift_metrics_storage_kind=nfs
+openshift_metrics_storage_access_modes=['ReadWriteOnce']
+openshift_metrics_storage_host=hostname901.domain.com
+openshift_metrics_storage_nfs_directory=/export/metrics
+openshift_metrics_storage_volume_name=20g-persist-metrics
+openshift_metrics_storage_volume_size=20Gi
+#Options for Metric Upgrade Playbook
+openshift_metrics_hawkular_nodeselector={"node-role.kubernetes.io/infra": "true"}
+openshift_metrics_cassandra_nodeselector={"node-role.kubernetes.io/infra": "true"}
+openshift_metrics_heapster_nodeselector={"node-role.kubernetes.io/infra": "true"}
+openshift_metrics_install_metrics=true 
+#openshift_metrics_image_version=v3.10
+openshift_metrics_hawkular_hostname=metrics.ose-env.domain.com 
+openshift_metrics_cassandra_storage_type=pv
+openshift_metrics_resolution=30s
+openshift_metrics_cassandra_pvc_size=20Gi
+openshift_metrics_duration=7
+
+# Logging deployment
+#
+# Currently logging deployment is disabled by default, enable it by setting this
+# These following 2 lines should be uncommented for the initial install.  Once logging is manually
+# configured to the local storage infra node they should be commented back for any subsequent install runs
+#openshift_hosted_logging_deploy=true
+#openshift_logging_master_public_url=https://kibana.ose-env.domain.com
+#logging_elasticsearch_rollout_override=true
+
+#Options for Logging Upgrade Playbook
+openshift_logging_kibana_nodeselector={"node-role.kubernetes.io/infra": "true"}
+openshift_logging_kibana_hostname=kibana.ose-env.domain.com
+openshift_logging_curator_nodeselector={"node-role.kubernetes.io/infra": "true"}
+openshift_logging_es_nodeselector={"node-role.kubernetes.io/infra": "true"}
+openshift_logging_install_logging=true
+openshift_logging_install_eventrouter=true
+openshift_logging_eventrouter_nodeselector={"node-role.kubernetes.io/infra": "true"}
+#openshift_logging_image_version=v3.10
+# 15 Days for Dev 30 Days for Prod
+openshift_logging_curator_default_days=15
+openshift_logging_es_cluster_size=2
+openshift_logging_es_number_of_shards=1
+openshift_logging_es_number_of_replicas=0
+openshift_logging_es_memory_limit=16G
+openshift_logging_fluentd_cpu_limit=300m
+openshift_logging_fluentd_memory_limit=512Mi
+openshift_logging_fluentd_buffer_queue_limit=4096
+openshift_logging_fluentd_buffer_size_limit=32Mi
+openshift_logging_kibana_proxy_memory_limit=192Mi
+
+# Prometheus / Monitoring
+#openshift_cluster_monitoring_operator_install=true
+#openshift_prometheus_node_selector={"node-role.kubernetes.io/infra":"true"}
+#openshift_prometheus_storage_kind=glusterfs
+#openshift_prometheus_storage_type=pvc
+#openshift_prometheus_storage_volume_name=prometheus
+#openshift_prometheus_storage_volume_size=50G
+#openshift_prometheus_storage_access_modes=['ReadWriteOnce']
+#openshift_prometheus_state=present
+#openshift_prometheus_namespace=prometheus
+openshift_cluster_monitoring_operator_install=true
+openshift_cluster_monitoring_operator_prometheus_storage_enabled=true
+openshift_cluster_monitoring_operator_alertmanager_storage_enabled=true
+openshift_cluster_monitoring_operator_prometheus_storage_class_name=gluster-storage
+openshift_cluster_monitoring_operator_alertmanager_storage_class_name=gluster-storage
+openshift_cluster_monitoring_operator_prometheus_storage_capacity=50G
+openshift_cluster_monitoring_operator_alertmanager_storage_capacity=5G
+openshift_cluster_monitoring_operator_node_selector={"node-role.kubernetes.io/infra":"true"}
+
+# Options for Openshift Ansible Broker (OAB) and Ansible playbook bundles (APBs)
+openshift_hosted_etcd_storage_kind=glusterfs
+##openshift_hosted_etcd_storage_nfs_options="*(rw,root_squash,sync,no_wdelay)"
+##openshift_hosted_etcd_storage_nfs_directory=/opt/osev3-etcd
+openshift_hosted_etcd_storage_volume_name=etcd-vol2
+openshift_hosted_etcd_storage_access_modes=["ReadWriteOnce"]
+openshift_hosted_etcd_storage_volume_size=1G
+openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
+ansible_service_broker_image_prefix=registry.access.redhat.com/openshift3/ose-
+ansible_service_broker_registry_url=registry.access.redhat.com
+ansible_service_broker_local_registry_whitelist=['.*-apb$']
+openshift_template_service_broker_namespaces=['openshift']
+
+# The following lines arefor removing the service catalog
+openshift_enable_service_catalog=false
+template_service_broker_install=false
+ansible_service_broker_install=false
+ansible_service_broker_remove=true
+template_service_broker_remove=true
+openshift_service_catalog_remove=true
+
+# Configure the multi-tenant SDN plugin (default is 'redhat/openshift-ovs-subnet')
+os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
+
+# Configure SDN cluster network and kubernetes service CIDR blocks. These
+# network blocks should be private and should not conflict with network blocks
+# in your infrastructure that pods may require access to. Can not be changed
+# after deployment.
+osm_cluster_network_cidr=10.128.0.0/10
+openshift_portal_net=172.30.0.0/16
+
+# Configure master API and console ports.
+openshift_master_api_port=443
+openshift_master_console_port=443
+
+# Global Proxy Configuration
+# These options configure HTTP_PROXY, HTTPS_PROXY, and NOPROXY environment
+# variables for docker and master services.
+openshift_http_proxy=http://proxy.domain.com:8080
+openshift_https_proxy=http://proxy.domain.com:8080
+
+openshift_no_proxy=
+
+# Most environments don't require a proxy between openshift masters, nodes, and
+# etcd hosts. So automatically add those hostnames to the openshift_no_proxy list.
+# If all of your hosts share a common domain you may wish to disable this and
+# specify that domain above.
+openshift_generate_no_proxy_hosts=True
+
+# host groups
+[masters]
+hostname90[1:3].domain.com
+
+[etcd]
+hostname90[1:3].domain.com
+
+[glusterfs]
+hostname905.domain.com glusterfs_ip=172.18.38.61 glusterfs_devices='[ "/dev/sdd" ]'
+hostname906.domain.com glusterfs_ip=172.18.38.62 glusterfs_devices='[ "/dev/sdd" ]'
+hostname907.domain.com glusterfs_ip=172.18.38.63 glusterfs_devices='[ "/dev/sdd" ]'
+
+[nodes]
+hostname90[1:3].domain.com openshift_node_group_name='node-config-master'
+hostname70[1:2].domain.com openshift_node_group_name='node-config-infra'
+hostname90[3:4].domain.com openshift_node_group_name='node-config-infra-logging'
+hostname90[5:7].domain.com openshift_node_group_name='node-config-infra-gluster'
+hostname80[1:2].domain.com openshift_node_group_name='node-config-compute'
