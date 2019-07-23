@@ -31,7 +31,7 @@ openshift_docker_options="--log-driver json-file --log-opt max-size=100M --log-o
 
 # Gluster Storage variables
 openshift_storage_glusterfs_namespace=gluster-storage
-openshift_storage_glusterfs_name=heketi-gluster-storage
+openshift_storage_glusterfs_name=gluster-storage
 
 # Debug level for all OpenShift components (Defaults to 2)
 debug_level=2
