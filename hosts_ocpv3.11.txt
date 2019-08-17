@@ -184,6 +184,7 @@ openshift_logging_fluentd_buffer_size_limit=32Mi
 openshift_logging_kibana_proxy_memory_limit=192Mi
 
 # Prometheus / Monitoring
+# ansible-playbook -i hosts /usr/share/ansible/openshift-ansible/playbooks/openshift-monitoring/config.yml -e openshift_cluster_monitoring_operator_install=true
 #openshift_cluster_monitoring_operator_install=true
 #openshift_prometheus_node_selector={"node-role.kubernetes.io/infra":"true"}
 #openshift_prometheus_storage_kind=glusterfs
