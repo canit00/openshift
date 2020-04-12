@@ -1,0 +1,37 @@
+admissionConfig:
+  pluginConfig:
+    openshift.io/ImagePolicy:
+      configuration:
+        kind: ImagePolicyConfig
+        apiVersion: v1
+        resolveImages: AttemptRewrite
+        executionRules:
+        - name: execution-allow
+          # Allow all images that have the annotation/label images.openshift.io/allow-execution set to true.
+          # This annotation is set by infrastructure that wishes to allow only signed/labeled images.
+          onResources:
+          - resource: pods
+          - resource: builds
+          allow: true
+          matchImageAnnotations:
+          - key: images.openshift.io/allow-execution
+            value: "true"
+          skipOnResolutionFailure: true
+        - name: allow-images-from-internal-registry
+          # allows images from the internal registry and tries to resolve them
+          onResources:
+          - resource: pods
+          - resource: builds
+          matchIntegratedRegistry: true
+    BuildDefaults:
+      configuration:
+        apiVersion: v1
+        env: []
+        kind: BuildDefaultsConfig
+        resources:
+          limits: {}
+          requests: {}
+    BuildOverrides:
+      configuration:
+        apiVersion: v1
+        kind: BuildOverridesConfig
